@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Андрій & Анна — Весілля</title>
+  <link rel="icon" type="image/png" href="assets/icon.png" />
+  <link rel="apple-touch-icon" href="assets/icon.png" />
+  <meta property="og:title" content="Андрій & Анна — Весілля 12.07.2026" />
+  <meta property="og:image" content="assets/icon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Cormorant Garamond', serif;
+      color: #3d342f;
+      overflow-x: hidden;
+      background: linear-gradient(to bottom, #f8f4ef, #fdfbf8, #f3ece7);
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── Envelope overlay ── */
+    #envelope-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #b5b191;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    #envelope-img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+    }
+
+    /* ── Video overlay ── */
+    #video-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: #b5b191;
+      display: none;
+      overflow: hidden;
+      opacity: 1;
+    }
+    #video-overlay.active { display: block; }
+    #video-overlay .video-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      transition: opacity 0.5s ease;
+    }
+    #video-overlay .video-layer--first {
+      z-index: 2;
+      opacity: 1;
+    }
+    #video-overlay .video-layer--second {
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.65s ease-in-out;
+    }
+
+    /* ── Invitation content ── */
+    #invitation { opacity: 0; transition: opacity 1s ease; }
+    #invitation.visible { opacity: 1; }
+
+    .script-font { font-family: 'Great Vibes', cursive; }
+
+    .section-title {
+      letter-spacing: 0.15em;
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    /* ── Animations ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(35px);
+    }
+    .fade-up.visible {
+      animation: fadeUp 1.4s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(35px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUpCountdown {
+      from { opacity: 0; transform: translateY(36px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .float { animation: float 6s ease-in-out infinite; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .shimmer {
+      background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.65), rgba(255,255,255,0.2));
+      background-size: 200% 100%;
+      animation: shimmer 6s infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* ── Floating particles ── */
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.6);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    /* ── Decorative dividers ── */
+    .page-divider {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      padding: 0.45rem 1rem;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+    .page-divider img {
+      display: block;
+      width: auto;
+      max-width: min(88vw, 380px);
+      height: auto;
+      margin-left: auto;
+      margin-right: auto;
+      opacity: 0.94;
+    }
+    .page-divider--soft img { opacity: 0.88; max-width: min(82vw, 320px); }
+    .page-divider--palette-top {
+      padding: 0.2rem 1rem 0.65rem;
+    }
+    .page-divider--countdown-bridge {
+      padding: 2rem 1rem 0;
+      background: linear-gradient(
+        180deg,
+        rgba(245,246,248,0) 0%,
+        rgba(245,246,248,0.35) 40%,
+        rgba(246,244,241,0.78) 100%
+      );
+    }
+    .page-divider--countdown-bridge img {
+      opacity: 0.82;
+    }
+
+    /* ── Hero section ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.5rem;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80') center/cover;
+      opacity: 0.10;
+    }
+    .hero-shimmer {
+      position: absolute;
+      inset: 0;
+      opacity: 0.3;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      max-width: 600px;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(2.85rem, 11vw, 6.25rem);
+      letter-spacing: 0.06em;
+      color: #2f2622;
+      line-height: 1.18;
+      margin-bottom: 1rem;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .hero .subtitle {
+      text-transform: uppercase;
+      letter-spacing: 0.35em;
+      font-size: clamp(0.75rem, 3vw, 1.2rem);
+      margin-bottom: 2rem;
+    }
+    .hero .quote {
+      font-size: clamp(1rem, 4vw, 1.5rem);
+      font-weight: 300;
+      line-height: 1.6;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .hero .scroll-arrow {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.8rem;
+      color: #bfa58a;
+      animation: bounce 2s infinite;
+    }
+
+    /* ── Date section ── */
+    .date-section { padding: 4rem 1.5rem; text-align: center; }
+    .date-section h3 {
+      font-size: clamp(2.5rem, 10vw, 4rem);
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+    .calendar-card {
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 2rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      border: 1px solid #e8ddd2;
+    }
+    .calendar-card h4 {
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: 1.2rem;
+      font-weight: 400;
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.25rem;
+      font-size: clamp(0.85rem, 3.5vw, 1.2rem);
+    }
+    .calendar-grid .day-header { font-weight: 500; padding: 0.3rem 0; }
+    .calendar-grid .day-cell {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem 0;
+    }
+    .calendar-grid .day-cell.highlighted span {
+      font-weight: 600;
+      color: #7a5c3e;
+      position: relative;
+      z-index: 2;
+    }
+    .ring-date {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border: 2px solid #c8a97e;
+      border-radius: 9999px;
+      box-shadow: 0 0 0 2px rgba(200,169,126,0.15);
+    }
+    .ring-date::after {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 10px;
+      height: 10px;
+      border: 2px solid #c8a97e;
+      background: white;
+    }
+
+    /* ── Timeline section ── */
+    .timeline-section { padding: 4rem 1.5rem; text-align: center; }
+    .timeline-section .section-title { margin-bottom: 3rem; }
+    .timeline {
+      max-width: 500px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: #d8cbb8;
+      transform: translateX(-50%);
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .timeline-time {
+      text-align: right;
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(1.5rem, 6vw, 2.2rem);
+    }
+    .timeline-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #d8cbb8;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .timeline-info { text-align: left; }
+    .timeline-info .title {
+      font-size: clamp(0.8rem, 3.2vw, 1.1rem);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    .timeline-info .location {
+      font-style: italic;
+      font-size: clamp(0.75rem, 3vw, 1rem);
+      color: #6d5c50;
+    }
+
+    /* ── Location section ── */
+    .location-section {
+      padding: 4rem 1.5rem;
+      text-align: center;
+      position: relative;
+      background: url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80') center/cover;
+    }
+    .location-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(248,244,239,0.85);
+    }
+    .location-content {
+      position: relative;
+      z-index: 1;
+    }
+    .location-content .venue {
+      font-size: clamp(1.8rem, 7vw, 3rem);
+      margin-bottom: 0.5rem;
+      font-weight: 400;
+    }
+    .location-content .address {
+      font-size: clamp(1rem, 4vw, 1.4rem);
+      font-style: italic;
+    }
+    .map-btn {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.85rem 2.2rem;
+      border: 1px solid #bfa58a;
+      border-radius: 9999px;
+      font-size: 1rem;
+      font-family: 'Cormorant Garamond', serif;
+      color: #3d342f;
+      text-decoration: none;
+      transition: all 0.5s;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+    .map-btn:hover, .map-btn:active {
+      background: #bfa58a;
+      color: #fff;
+    }
+
+    /* ── Colors section ── */
+    .colors-section { padding: 2.5rem 0.35rem 2rem; text-align: center; }
+    .palette-block {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0.5rem 0.15rem 1rem;
+      box-sizing: border-box;
+    }
+    .palette-columns {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: clamp(0.2rem, 1.5vw, 0.5rem);
+      width: 100%;
+      align-items: start;
+    }
+    .palette-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      min-width: 0;
+      gap: 0.28rem;
+    }
+    .palette-swatch {
+      width: 100%;
+      height: clamp(52px, 15vw, 84px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .palette-swatch img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 4px 10px rgba(61,52,47,0.07));
+    }
+    .palette-heart-wrap {
+      width: 100%;
+      min-height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0.15rem 0 0.2rem;
+    }
+    .palette-col .palette-heart {
+      display: block;
+      width: 100%;
+      max-width: 72px;
+      min-width: 44px;
+      height: auto;
+      max-height: 26px;
+      margin: 0;
+      padding: 0;
+      flex-shrink: 0;
+      object-fit: contain;
+      object-position: center;
+      opacity: 0.95;
+      filter: drop-shadow(0 1px 3px rgba(47,38,34,0.22));
+    }
+    .palette-col .palette-script {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(0.68rem, 3.1vw, 1rem);
+      letter-spacing: 0.02em;
+      text-transform: none;
+      line-height: 1.1;
+      color: #3d342f;
+      word-break: break-word;
+    }
+    .palette-col .palette-hex {
+      font-size: clamp(0.45rem, 1.7vw, 0.68rem);
+      letter-spacing: 0.1em;
+      color: #7a6d64;
+      font-weight: 300;
+    }
+    @media (min-width: 480px) {
+      .palette-block { max-width: 560px; }
+      .palette-swatch { height: clamp(64px, 12vw, 92px); }
+      .palette-col .palette-script { font-size: clamp(0.8rem, 2.2vw, 1.1rem); }
+    }
+    .charity-msg {
+      margin-top: 2rem;
+      padding: 0 1.5rem;
+      font-size: clamp(0.95rem, 3.5vw, 1.2rem);
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+    .charity-msg p { margin-bottom: 0.4rem; }
+
+    /* ── Countdown section (без скруглень, лише плавні градієнти) ── */
+    .countdown-section {
+      position: relative;
+      isolation: isolate;
+      padding: 4.5rem 1.5rem 5rem;
+      margin-top: 0;
+      text-align: center;
+      overflow: visible;
+      border-radius: 0;
+      box-shadow: none;
+      background: linear-gradient(
+        180deg,
+        rgba(250,248,246,0.92) 0%,
+        rgba(247,245,242,0.96) 35%,
+        rgba(244,242,239,0.98) 70%,
+        rgba(241,239,236,1) 100%
+      );
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    /* Перехід перед відліком (холодніший крем / ледь сіро-блакитний пастель) */
+    .countdown-section::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 100%;
+      height: min(36vw, 240px);
+      pointer-events: none;
+      z-index: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(248,246,243,0) 0%,
+        rgba(246,245,246,0.35) 28%,
+        rgba(245,246,247,0.62) 55%,
+        rgba(246,244,242,0.85) 82%,
+        rgba(247,245,243,0.95) 100%
+      );
+    }
+    /* Перехід після відліку → до наступного блоку */
+    .countdown-section::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      height: min(34vw, 220px);
+      pointer-events: none;
+      z-index: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(241,239,236,0.85) 0%,
+        rgba(242,240,237,0.92) 22%,
+        rgba(243,238,234,0.96) 48%,
+        rgba(243,236,231,1) 78%,
+        rgba(241,237,235,1) 100%
+      );
+    }
+    .countdown-section.fade-up.visible {
+      animation: fadeUpCountdown 2.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .countdown-section .section-title {
+      position: relative;
+      z-index: 2;
+      margin-bottom: 2rem;
+    }
+    .countdown-section .countdown-grid {
+      position: relative;
+      z-index: 2;
+    }
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.6rem;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .countdown-card {
+      background: rgba(255,255,255,0.8);
+      border-radius: 1.4rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      padding: 1rem 0.4rem;
+      border: 1px solid #ede2d6;
+      transition: transform 0.5s;
+    }
+    .countdown-card:active { transform: translateY(-4px); }
+    .countdown-value {
+      font-size: clamp(1.8rem, 7vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .countdown-label {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: clamp(0.55rem, 2.2vw, 0.75rem);
+    }
+
+    /* ── Footer (градієнт після зворотного відліку — ::before) ── */
+    .footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: min(10vw, 4.5rem) 1.5rem 3rem;
+      margin-top: min(8vw, 3.5rem);
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(1.5rem, 6vw, 2.5rem);
+      color: #bfa58a;
+      background: linear-gradient(180deg, #f3ece7 0%, #f6f0ea 40%, #f8f4ef 100%);
+    }
+    .footer::before {
+      content: '';
+      display: block;
+      width: 100%;
+      height: min(22vw, 140px);
+      margin: calc(-1 * min(22vw, 140px)) 0 min(4vw, 1.25rem);
+      background: linear-gradient(
+        180deg,
+        rgba(241,239,236,0.25) 0%,
+        rgba(242,239,236,0.55) 35%,
+        rgba(243,236,231,0.88) 70%,
+        #f1ebe6 100%
+      );
+      pointer-events: none;
+    }
+
+    /* ── Pare photo (холодніший пастельний тон, без світіння по краях) ── */
+    .pare-block {
+      max-width: min(92vw, 440px);
+      margin: 0 auto;
+      padding: 1rem 1.35rem 1.5rem;
+      box-sizing: border-box;
+    }
+    .pare-frame {
+      position: relative;
+      border-radius: 1rem;
+      padding: 0;
+      background: rgba(242,240,238,0.35);
+      box-shadow: none;
+    }
+    .pare-photo {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 1rem;
+      position: relative;
+      z-index: 0;
+      filter:
+        sepia(4%)
+        hue-rotate(-18deg)
+        saturate(76%)
+        brightness(1.04)
+        contrast(0.94);
+    }
+
+    /* ── Particles container ── */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    /* ── Responsive adjustments ── */
+    @media (min-width: 768px) {
+      .countdown-grid { max-width: 600px; }
+      .countdown-card { padding: 1.5rem 1rem; border-radius: 2rem; }
+      .ring-date { width: 44px; height: 44px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Envelope overlay -->
+  <div id="envelope-overlay" onclick="openEnvelope()">
+    <img id="envelope-img" src="assets/envelope.png" alt="Запрошення" />
+  </div>
+
+  <!-- Video overlay: 1) конверт → 2) Video.mp4 -->
+  <div id="video-overlay">
+    <video id="envelope-video" class="video-layer video-layer--first" muted playsinline preload="auto">
+      <source src="assets/envelop.mp4" type="video/mp4" />
+    </video>
+    <video id="intro-video" class="video-layer video-layer--second" muted playsinline webkit-playsinline preload="auto">
+      <!-- Кілька шляхів: GitHub Pages чутливий до регістру; файл може лежати в assets/ або поруч з index.html -->
+      <source src="assets/Video.mp4" type="video/mp4" />
+      <source src="assets/video.mp4" type="video/mp4" />
+      <source src="Video.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <!-- Main invitation content -->
+  <div id="invitation">
+
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Hero -->
+    <section class="hero fade-up">
+      <div class="hero-bg"></div>
+      <div class="hero-shimmer shimmer"></div>
+      <div class="hero-content">
+        <h1>Андрій & Анна</h1>
+        <p class="subtitle">Запрошуємо вас на наше весілля</p>
+        <p class="quote">Є події пам'ятні на все життя і є люди, з якими приємно бути поруч.</p>
+      </div>
+      <div class="scroll-arrow">⌄</div>
+    </section>
+
+    <div class="page-divider" aria-hidden="true"><img src="divider/divider_12.png" alt="" /></div>
+
+    <!-- Date -->
+    <section class="date-section fade-up">
+      <h2 class="section-title">Дата</h2>
+      <h3>12.07.2026</h3>
+      <div class="calendar-card">
+        <h4>Липень 2026</h4>
+        <div class="calendar-grid" id="calendar-grid"></div>
+      </div>
+    </section>
+
+    <!-- Timeline -->
+    <section class="timeline-section fade-up">
+      <h2 class="section-title">Таймінг дня</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-time">13:00</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-info">
+            <div class="title">Таїнство вінчання</div>
+            <div class="location">Покровський собор</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">14:00</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-info">
+            <div class="title">Збір гостей</div>
+            <div class="location">Ресторан «Айвенго»</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">14:30</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-info">
+            <div class="title">Церемонія та святковий банкет</div>
+            <div class="location">с. Колоденка, вул. Зелена 53</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="page-divider" aria-hidden="true"><img src="divider/divider_12.png" alt="" /></div>
+
+    <!-- Location -->
+    <section class="location-section fade-up">
+      <div class="location-content">
+        <h2 class="section-title" style="margin-bottom: 1rem;">Локація</h2>
+        <p class="venue">Ресторан «Айвенго»</p>
+        <p class="address">с. Колоденка, вул. Зелена 53</p>
+        <a class="map-btn"
+           href="https://www.google.com/maps/search/?api=1&query=Ресторан+Айвенго+Колоденка+Зелена+53"
+           target="_blank"
+           rel="noopener noreferrer">
+          Переглянути на мапі
+        </a>
+      </div>
+    </section>
+
+    <div class="page-divider" aria-hidden="true"><img src="divider/divider_12.png" alt="" /></div>
+
+    <!-- Color palette -->
+    <section class="colors-section fade-up">
+      <h2 class="section-title">Палітра кольорів</h2>
+      <div class="page-divider page-divider--palette-top" aria-hidden="true"><img src="divider/divider_12.png" alt="" /></div>
+      <div class="palette-block">
+        <div class="palette-columns">
+          <div class="palette-col">
+            <div class="palette-swatch"><img src="colors/beige_swash.png" alt="" /></div>
+            <div class="palette-heart-wrap"><img class="palette-heart" src="divider/divider_heart.png" alt="" /></div>
+            <span class="palette-script">Бежевий</span>
+            <span class="palette-hex">#DCCDBA</span>
+          </div>
+          <div class="palette-col">
+            <div class="palette-swatch"><img src="colors/light_beige_swash.png" alt="" /></div>
+            <div class="palette-heart-wrap"><img class="palette-heart" src="divider/divider_heart.png" alt="" /></div>
+            <span class="palette-script">Світло-бежевий</span>
+            <span class="palette-hex">#F1E9DF</span>
+          </div>
+          <div class="palette-col">
+            <div class="palette-swatch"><img src="colors/green_swash.png" alt="" /></div>
+            <div class="palette-heart-wrap"><img class="palette-heart" src="divider/divider_heart.png" alt="" /></div>
+            <span class="palette-script">Зелений</span>
+            <span class="palette-hex">#6F7A5A</span>
+          </div>
+          <div class="palette-col">
+            <div class="palette-swatch"><img src="colors/brown_swash.png" alt="" /></div>
+            <div class="palette-heart-wrap"><img class="palette-heart" src="divider/divider_heart.png" alt="" /></div>
+            <span class="palette-script">Коричневий</span>
+            <span class="palette-hex">#8B5E34</span>
+          </div>
+          <div class="palette-col">
+            <div class="palette-swatch"><img src="colors/black_swash.png" alt="" /></div>
+            <div class="palette-heart-wrap"><img class="palette-heart" src="divider/divider_heart.png" alt="" /></div>
+            <span class="palette-script">Чорний</span>
+            <span class="palette-hex">#1A1A1A</span>
+          </div>
+        </div>
+      </div>
+      <div class="charity-msg">
+        <p>Квіти тішать недовго, а добрі справи залишаються.</p>
+        <p>Тож якщо бажаєте нас привітати — донат на ЗСУ буде для нас найціннішим.</p>
+      </div>
+    </section>
+
+    <div class="page-divider page-divider--countdown-bridge" aria-hidden="true"><img src="divider/divider_12.png" alt="" /></div>
+
+    <!-- Countdown -->
+    <section class="countdown-section fade-up">
+      <h2 class="section-title">Чекаємо на вас через</h2>
+      <div class="countdown-grid">
+        <div class="countdown-card">
+          <div class="countdown-value" id="cd-days">--</div>
+          <div class="countdown-label">днів</div>
+        </div>
+        <div class="countdown-card">
+          <div class="countdown-value" id="cd-hours">--</div>
+          <div class="countdown-label">годин</div>
+        </div>
+        <div class="countdown-card">
+          <div class="countdown-value" id="cd-minutes">--</div>
+          <div class="countdown-label">хвилин</div>
+        </div>
+        <div class="countdown-card">
+          <div class="countdown-value" id="cd-seconds">--</div>
+          <div class="countdown-label">секунд</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="page-divider" aria-hidden="true"><img src="divider/divider_16-Photoroom.png" alt="" /></div>
+
+    <div class="pare-block">
+      <figure class="pare-frame">
+        <img class="pare-photo" src="pare.png" alt="" width="800" height="600" decoding="async" loading="lazy" />
+      </figure>
+    </div>
+
+    <div class="page-divider" aria-hidden="true"><img src="divider/divider_16-Photoroom.png" alt="" /></div>
+
+    <!-- Footer -->
+    <div class="footer">З любов'ю, Андрій & Анна</div>
+
+  </div>
+
+  <script>
+    /* ── Envelope → Video → Invitation flow ── */
+    let envelopeOpened = false;
+
+    function openEnvelope() {
+      if (envelopeOpened) return;
+      envelopeOpened = true;
+
+      const overlay = document.getElementById('envelope-overlay');
+      const videoOverlay = document.getElementById('video-overlay');
+      const v1 = document.getElementById('envelope-video');
+      const v2 = document.getElementById('intro-video');
+
+      let safetyTimer = null;
+      let sequenceDone = false;
+      function finishVideos() {
+        if (sequenceDone) return;
+        sequenceDone = true;
+        if (safetyTimer) clearTimeout(safetyTimer);
+        videoOverlay.style.transition = 'opacity 1s ease';
+        videoOverlay.style.opacity = '0';
+        setTimeout(() => {
+          videoOverlay.classList.remove('active');
+          videoOverlay.style.display = 'none';
+          videoOverlay.style.opacity = '1';
+          try {
+            v1.pause();
+            v2.pause();
+          } catch (e) {}
+          v1.style.opacity = '1';
+          v2.style.opacity = '0';
+          v1.style.zIndex = '';
+          v2.style.zIndex = '';
+          showInvitation();
+        }, 1000);
+      }
+
+      videoOverlay.style.opacity = '1';
+      videoOverlay.classList.add('active');
+      v1.style.opacity = '1';
+      v1.style.zIndex = '2';
+      v2.style.opacity = '0';
+      v2.style.zIndex = '1';
+      v2.pause();
+      /* Почати завантаження другого відео одразу після жесту (оверлей вже display:block), щоб до старту другого ролика воно встигло підготуватися */
+      try {
+        v2.load();
+      } catch (e) {}
+
+      v1.currentTime = 0;
+      v1.play().then(() => {
+        overlay.style.display = 'none';
+      }).catch(() => {
+        overlay.style.display = 'none';
+        showInvitation();
+      });
+
+      /* 1,2 с повне перше відео, потім гасне */
+      setTimeout(() => {
+        v1.style.transition = 'opacity 0.32s ease';
+        v1.style.opacity = '0';
+        setTimeout(() => {
+          try { v1.pause(); } catch (e) {}
+        }, 360);
+      }, 1200);
+
+      /* Після початку затухання — друге відео (~0,3 с перекриття) */
+      setTimeout(() => {
+        v2.style.zIndex = '3';
+        v1.style.zIndex = '1';
+        v2.currentTime = 0;
+
+        function runFadeIn() {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              v2.style.opacity = '1';
+            });
+          });
+        }
+
+        function tryPlayIntro() {
+          const p = v2.play();
+          if (p !== undefined) {
+            p.then(runFadeIn).catch(() => finishVideos());
+          } else {
+            runFadeIn();
+          }
+        }
+
+        /* Якщо ще не готове — чекаємо canplay (часта причина «друге не стартує» на мобільних / повільному мережі) */
+        if (v2.readyState >= 2) {
+          tryPlayIntro();
+        } else {
+          const onReady = () => {
+            v2.removeEventListener('canplay', onReady);
+            v2.removeEventListener('error', onErr);
+            tryPlayIntro();
+          };
+          const onErr = () => {
+            v2.removeEventListener('canplay', onReady);
+            v2.removeEventListener('error', onErr);
+            finishVideos();
+          };
+          v2.addEventListener('canplay', onReady, { once: true });
+          v2.addEventListener('error', onErr, { once: true });
+        }
+      }, 1500);
+
+      v2.addEventListener('ended', finishVideos, { once: true });
+
+      /* Запасний вихід, якщо подія ended не надійшла */
+      safetyTimer = setTimeout(finishVideos, 180000);
+    }
+
+    function showInvitation() {
+      const invitation = document.getElementById('invitation');
+      invitation.classList.add('visible');
+      document.body.style.overflow = '';
+      initFadeObserver();
+    }
+
+    /* ── Intersection Observer for fade-up sections ── */
+    function initFadeObserver() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    }
+
+    /* ── Particles ── */
+    (function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle float';
+        const size = Math.random() * 14 + 4;
+        p.style.cssText = `
+          width: ${size}px;
+          height: ${size}px;
+          left: ${Math.random() * 100}%;
+          top: ${Math.random() * 100}%;
+          animation-delay: ${Math.random() * 5}s;
+        `;
+        container.appendChild(p);
+      }
+    })();
+
+    /* ── Calendar ── */
+    (function buildCalendar() {
+      const grid = document.getElementById('calendar-grid');
+      const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'];
+
+      dayNames.forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'day-header';
+        el.textContent = d;
+        grid.appendChild(el);
+      });
+
+      // July 2026 starts on Wednesday (index 2 in Mon-based week)
+      const startDay = 2;
+      for (let i = 0; i < startDay; i++) {
+        grid.appendChild(document.createElement('div'));
+      }
+      for (let day = 1; day <= 31; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'day-cell' + (day === 12 ? ' highlighted' : '');
+        if (day === 12) {
+          const ring = document.createElement('div');
+          ring.className = 'ring-date';
+          cell.appendChild(ring);
+        }
+        const span = document.createElement('span');
+        span.textContent = day;
+        cell.appendChild(span);
+        grid.appendChild(cell);
+      }
+    })();
+
+
+    /* ── Countdown ── */
+    (function startCountdown() {
+      const target = new Date('2026-07-12T13:00:00').getTime();
+
+      function update() {
+        const diff = target - Date.now();
+        if (diff <= 0) {
+          document.getElementById('cd-days').textContent = '0';
+          document.getElementById('cd-hours').textContent = '0';
+          document.getElementById('cd-minutes').textContent = '0';
+          document.getElementById('cd-seconds').textContent = '0';
+          return;
+        }
+        document.getElementById('cd-days').textContent = Math.floor(diff / 86400000);
+        document.getElementById('cd-hours').textContent = Math.floor((diff / 3600000) % 24);
+        document.getElementById('cd-minutes').textContent = Math.floor((diff / 60000) % 60);
+        document.getElementById('cd-seconds').textContent = Math.floor((diff / 1000) % 60);
+      }
+
+      update();
+      setInterval(update, 1000);
+    })();
+  </script>
+</body>
+</html>
