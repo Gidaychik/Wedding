@@ -10,16 +10,27 @@
   <link rel="apple-touch-icon" href="assets/icon.png" />
   <meta property="og:title" content="Андрій & Анна — Весілля 12.07.2026" />
   <meta property="og:image" content="assets/icon.png" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      background: #f3e9df;
+    }
     body {
       font-family: 'Cormorant Garamond', serif;
       color: #3d342f;
       overflow-x: hidden;
-      background: linear-gradient(to bottom, #f8f4ef, #fdfbf8, #f3ece7);
+      background: linear-gradient(
+        180deg,
+        #f8f0e6 0%,
+        #faf5ee 38%,
+        #f4e9de 72%,
+        #efe4d6 100%
+      );
       min-height: 100vh;
+      min-height: 100svh;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -40,6 +51,101 @@
       width: 100%;
       height: 100%;
       object-fit: fill;
+    }
+
+    /* ── Підказка: краще на смартфоні (ПК / ноутбук) ── */
+    #desktop-hint {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 2rem);
+      background:
+        linear-gradient(
+          168deg,
+          rgba(98, 62, 48, 0.62) 0%,
+          rgba(52, 38, 32, 0.74) 42%,
+          rgba(72, 48, 42, 0.66) 100%
+        );
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      text-align: center;
+    }
+    #desktop-hint[hidden] {
+      display: none !important;
+    }
+    .desktop-hint__card {
+      max-width: 420px;
+      width: 100%;
+      padding: clamp(1.75rem, 5vw, 2.5rem) clamp(1.5rem, 4vw, 2rem);
+      border-radius: 1.25rem;
+      background: linear-gradient(165deg, rgba(255, 252, 248, 0.97) 0%, rgba(248, 244, 239, 0.94) 100%);
+      box-shadow:
+        0 24px 48px rgba(47, 38, 34, 0.12),
+        0 0 0 1px rgba(232, 221, 210, 0.85);
+    }
+    .desktop-hint__icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1.05rem;
+      color: #3d342f;
+    }
+    .desktop-hint__phone {
+      width: 46px;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 1px 2px rgba(47, 38, 34, 0.12));
+    }
+    .desktop-hint__title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: clamp(1.4rem, 3.6vw, 1.75rem);
+      color: #2f2622;
+      margin-bottom: 1rem;
+      letter-spacing: 0.04em;
+    }
+    .desktop-hint__text {
+      font-size: clamp(1.08rem, 2.5vw, 1.22rem);
+      font-weight: 500;
+      line-height: 1.65;
+      color: #3d342f;
+      margin-bottom: 1.75rem;
+    }
+    .desktop-hint__heart-wrap {
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 0.2em;
+      line-height: 0;
+    }
+    .desktop-hint__heart {
+      width: 1.05em;
+      height: 1.05em;
+      display: inline-block;
+      vertical-align: -0.18em;
+      filter: drop-shadow(0 0 1px rgba(180, 150, 130, 0.45));
+    }
+    .desktop-hint__continue {
+      display: inline-block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #8a7a6a;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem 0.25rem;
+      text-decoration: underline;
+      text-underline-offset: 0.25em;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .desktop-hint__continue:hover {
+      color: #5c4f44;
     }
 
     /* ── Video overlay ── */
@@ -71,9 +177,54 @@
       transition: opacity 0.65s ease-in-out;
     }
 
-    /* ── Invitation content ── */
-    #invitation { opacity: 0; transition: opacity 1s ease; }
-    #invitation.visible { opacity: 1; }
+    /* Кінець інтро: лише вуаль поверх зупиненого відео → далі головна сторінка */
+    .video-outro {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+    }
+    .video-outro__veil {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        185deg,
+        rgba(42, 32, 28, 0.62) 0%,
+        rgba(32, 26, 22, 0.78) 50%,
+        rgba(48, 36, 30, 0.7) 100%
+      );
+      opacity: 0;
+      transition: opacity 1.15s ease;
+    }
+    .video-outro.is-revealing .video-outro__veil {
+      opacity: 1;
+    }
+
+    /* ── Invitation content (бежевий фон узгоджений зі сторінкою) ── */
+    #invitation {
+      position: relative;
+      z-index: 1;
+      isolation: isolate;
+      min-height: 100vh;
+      min-height: 100svh;
+      opacity: 1;
+      background: linear-gradient(
+        180deg,
+        #f8f0e6 0%,
+        #faf5ee 38%,
+        #f4e9de 72%,
+        #efe4d6 100%
+      );
+    }
+    .invitation-inner {
+      min-height: 100vh;
+      min-height: 100svh;
+      opacity: 0;
+      transition: opacity 1.1s ease;
+    }
+    #invitation.visible .invitation-inner {
+      opacity: 1;
+    }
 
     .script-font { font-family: 'Great Vibes', cursive; }
 
@@ -158,9 +309,9 @@
       padding: 2rem 1rem 0;
       background: linear-gradient(
         180deg,
-        rgba(245,246,248,0) 0%,
-        rgba(245,246,248,0.35) 40%,
-        rgba(246,244,241,0.78) 100%
+        rgba(245, 235, 222, 0) 0%,
+        rgba(243, 230, 216, 0.55) 48%,
+        rgba(241, 226, 210, 0.95) 100%
       );
     }
     .page-divider--countdown-bridge img {
@@ -180,16 +331,37 @@
       padding: 1.5rem;
       overflow: hidden;
     }
+    .hero-bg-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.1s ease;
+    }
+    .hero-bg-video.is-ready {
+      opacity: 1;
+    }
     .hero-bg {
       position: absolute;
       inset: 0;
-      background: url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80') center/cover;
-      opacity: 0.10;
+      z-index: 1;
+      background: linear-gradient(
+        180deg,
+        rgba(248,244,239,0.72) 0%,
+        rgba(253,251,248,0.45) 42%,
+        rgba(243,236,231,0.78) 100%
+      );
+      opacity: 1;
     }
     .hero-shimmer {
       position: absolute;
       inset: 0;
-      opacity: 0.3;
+      z-index: 2;
+      opacity: 0.28;
     }
     .hero-content {
       position: relative;
@@ -483,7 +655,7 @@
     }
     .charity-msg p { margin-bottom: 0.4rem; }
 
-    /* ── Countdown section (без скруглень, лише плавні градієнти) ── */
+    /* ── Countdown section (однотонний теплий беж, без «молочного» blur) ── */
     .countdown-section {
       position: relative;
       isolation: isolate;
@@ -493,52 +665,38 @@
       overflow: visible;
       border-radius: 0;
       box-shadow: none;
-      background: linear-gradient(
-        180deg,
-        rgba(250,248,246,0.92) 0%,
-        rgba(247,245,242,0.96) 35%,
-        rgba(244,242,239,0.98) 70%,
-        rgba(241,239,236,1) 100%
-      );
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: #f2e6da;
     }
-    /* Перехід перед відліком (холодніший крем / ледь сіро-блакитний пастель) */
     .countdown-section::before {
       content: '';
       position: absolute;
       left: 0;
       right: 0;
       bottom: 100%;
-      height: min(36vw, 240px);
+      height: min(28vw, 200px);
       pointer-events: none;
       z-index: 0;
       background: linear-gradient(
         180deg,
-        rgba(248,246,243,0) 0%,
-        rgba(246,245,246,0.35) 28%,
-        rgba(245,246,247,0.62) 55%,
-        rgba(246,244,242,0.85) 82%,
-        rgba(247,245,243,0.95) 100%
+        rgba(242, 230, 216, 0) 0%,
+        rgba(240, 226, 210, 0.65) 55%,
+        #f2e6da 100%
       );
     }
-    /* Перехід після відліку → до наступного блоку */
     .countdown-section::after {
       content: '';
       position: absolute;
       left: 0;
       right: 0;
       top: 100%;
-      height: min(34vw, 220px);
+      height: min(24vw, 160px);
       pointer-events: none;
       z-index: 0;
       background: linear-gradient(
         180deg,
-        rgba(241,239,236,0.85) 0%,
-        rgba(242,240,237,0.92) 22%,
-        rgba(243,238,234,0.96) 48%,
-        rgba(243,236,231,1) 78%,
-        rgba(241,237,235,1) 100%
+        #f2e6da 0%,
+        rgba(241, 228, 212, 0.98) 40%,
+        rgba(243, 232, 218, 1) 100%
       );
     }
     .countdown-section.fade-up.visible {
@@ -561,11 +719,11 @@
       margin: 0 auto;
     }
     .countdown-card {
-      background: rgba(255,255,255,0.8);
+      background: rgba(237, 222, 206, 0.75);
       border-radius: 1.4rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 18px rgba(61, 52, 47, 0.06);
       padding: 1rem 0.4rem;
-      border: 1px solid #ede2d6;
+      border: 1px solid rgba(210, 186, 162, 0.55);
       transition: transform 0.5s;
     }
     .countdown-card:active { transform: translateY(-4px); }
@@ -581,46 +739,38 @@
       font-size: clamp(0.55rem, 2.2vw, 0.75rem);
     }
 
-    /* ── Footer (градієнт після зворотного відліку — ::before) ── */
+    /* ── Footer (рівний бежевий фон, без окремого градієнтного «моста») ── */
     .footer {
       position: relative;
       z-index: 1;
       text-align: center;
-      padding: min(10vw, 4.5rem) 1.5rem 3rem;
-      margin-top: min(8vw, 3.5rem);
-      font-family: 'Great Vibes', cursive;
-      font-size: clamp(1.5rem, 6vw, 2.5rem);
-      color: #bfa58a;
-      background: linear-gradient(180deg, #f3ece7 0%, #f6f0ea 40%, #f8f4ef 100%);
-    }
-    .footer::before {
-      content: '';
-      display: block;
-      width: 100%;
-      height: min(22vw, 140px);
-      margin: calc(-1 * min(22vw, 140px)) 0 min(4vw, 1.25rem);
-      background: linear-gradient(
-        180deg,
-        rgba(241,239,236,0.25) 0%,
-        rgba(242,239,236,0.55) 35%,
-        rgba(243,236,231,0.88) 70%,
-        #f1ebe6 100%
-      );
-      pointer-events: none;
+      padding: min(8vw, 3.5rem) 1.5rem max(3rem, env(safe-area-inset-bottom, 0px));
+      margin-top: min(6vw, 2.5rem);
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(1.35rem, 5.2vw, 2.1rem);
+      letter-spacing: 0.06em;
+      line-height: 1.25;
+      color: #2f2622;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      background: #f0e4d8;
     }
 
-    /* ── Pare photo (холодніший пастельний тон, без світіння по краях) ── */
+    /* ── Pare photo (узгоджено з бежевим фіналом) ── */
     .pare-block {
       max-width: min(92vw, 440px);
       margin: 0 auto;
       padding: 1rem 1.35rem 1.5rem;
       box-sizing: border-box;
+      background: linear-gradient(180deg, rgba(252, 246, 238, 0.35) 0%, rgba(248, 239, 228, 0.55) 100%);
+      border-radius: 0.5rem;
     }
     .pare-frame {
       position: relative;
       border-radius: 1rem;
       padding: 0;
-      background: rgba(242,240,238,0.35);
+      background: rgba(245, 233, 218, 0.42);
       box-shadow: none;
     }
     .pare-photo {
@@ -657,6 +807,36 @@
 </head>
 <body>
 
+  <!-- Ніжне нагадування для екранів ПК / ноутбука -->
+  <div id="desktop-hint" class="desktop-hint" role="dialog" aria-modal="true" aria-labelledby="desktop-hint-title" hidden>
+    <div class="desktop-hint__card">
+      <div class="desktop-hint__icon" aria-hidden="true">
+        <svg class="desktop-hint__phone" viewBox="0 0 32 48" xmlns="http://www.w3.org/2000/svg" focusable="false">
+          <rect x="5" y="2" width="22" height="44" rx="5" ry="5" fill="none" stroke="currentColor" stroke-width="2" />
+          <rect x="9" y="6" width="14" height="22" rx="1.5" fill="currentColor" fill-opacity="0.1" stroke="none" />
+          <circle cx="16" cy="40" r="2.25" fill="currentColor" />
+        </svg>
+      </div>
+      <p id="desktop-hint-title" class="desktop-hint__title">Warning</p>
+      <p class="desktop-hint__text">
+        Задля найкращого враження від запрошення, будь ласка, відкрийте це посилання на своєму смартфоні.
+        <span class="desktop-hint__heart-wrap">
+          <svg class="desktop-hint__heart" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+            <path
+              fill="#ffffff"
+              stroke="#e8d6ce"
+              stroke-width="0.55"
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+            />
+          </svg>
+        </span>
+      </p>
+      <button type="button" class="desktop-hint__continue" onclick="dismissDesktopHint()">
+        Продовжити на цьому пристрої
+      </button>
+    </div>
+  </div>
+
   <!-- Envelope overlay -->
   <div id="envelope-overlay" onclick="openEnvelope()">
     <img id="envelope-img" src="assets/envelope.png" alt="Запрошення" />
@@ -668,21 +848,26 @@
       <source src="assets/envelop.mp4" type="video/mp4" />
     </video>
     <video id="intro-video" class="video-layer video-layer--second" muted playsinline webkit-playsinline preload="auto">
-      <!-- Кілька шляхів: GitHub Pages чутливий до регістру; файл може лежати в assets/ або поруч з index.html -->
-      <source src="assets/Video.mp4" type="video/mp4" />
-      <source src="assets/video.mp4" type="video/mp4" />
+      <!-- Файл Video.mp4 зазвичай поруч із index.html; при деплої в assets додайте другий <source> -->
       <source src="Video.mp4" type="video/mp4" />
     </video>
+    <div id="video-outro" class="video-outro" aria-hidden="true">
+      <div class="video-outro__veil"></div>
+    </div>
   </div>
 
   <!-- Main invitation content -->
   <div id="invitation">
+    <div class="invitation-inner">
 
     <!-- Floating particles -->
     <div class="particles" id="particles"></div>
 
     <!-- Hero -->
     <section class="hero fade-up">
+      <video id="hero-bg-video" class="hero-bg-video" muted playsinline webkit-playsinline preload="metadata" aria-hidden="true">
+        <source src="Video.mp4" type="video/mp4" />
+      </video>
       <div class="hero-bg"></div>
       <div class="hero-shimmer shimmer"></div>
       <div class="hero-content">
@@ -837,11 +1022,93 @@
     <!-- Footer -->
     <div class="footer">З любов'ю, Андрій & Анна</div>
 
+    </div>
   </div>
 
   <script>
+    /* ── Підказка для великого екрана (ПК / ноутбук) ── */
+    const DESKTOP_HINT_KEY = 'weddingDesktopHintDismissed';
+
+    function isLikelySmartphoneOrSmallTouchHandheld() {
+      const touch = navigator.maxTouchPoints > 0;
+      const ua = navigator.userAgent || '';
+      const phoneUA = /Android|iPhone|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+      const iPad = /iPad/i.test(ua) || (navigator.platform === 'MacIntel' && touch && !/iPhone|iPod/.test(ua));
+      const narrow = window.matchMedia('(max-width: 768px)').matches;
+      const coarse = window.matchMedia('(pointer: coarse)').matches;
+      const noHover = window.matchMedia('(hover: none)').matches;
+
+      if (iPad && window.innerWidth <= 1100) return true;
+      if (phoneUA && narrow && touch) return true;
+      if (narrow && touch && coarse && noHover) return true;
+      if (window.innerWidth <= 480 && touch) return true;
+      return false;
+    }
+
+    function dismissDesktopHint() {
+      const el = document.getElementById('desktop-hint');
+      if (el) el.setAttribute('hidden', '');
+      try {
+        sessionStorage.setItem(DESKTOP_HINT_KEY, '1');
+      } catch (e) {}
+      document.body.style.overflow = '';
+    }
+
+    (function initDesktopHint() {
+      const el = document.getElementById('desktop-hint');
+      if (!el) return;
+      let dismissed = false;
+      try {
+        dismissed = sessionStorage.getItem(DESKTOP_HINT_KEY) === '1';
+      } catch (e) {}
+      if (dismissed || isLikelySmartphoneOrSmallTouchHandheld()) return;
+      el.removeAttribute('hidden');
+      document.body.style.overflow = 'hidden';
+    })();
+
     /* ── Envelope → Video → Invitation flow ── */
     let envelopeOpened = false;
+
+    function prepareHeroBackgroundVideo(introV, heroV) {
+      return new Promise((resolve) => {
+        if (!heroV) {
+          resolve();
+          return;
+        }
+        const dur = introV && introV.duration;
+        if (!Number.isFinite(dur) || dur <= 0) {
+          resolve();
+          return;
+        }
+        const t = Math.max(0, dur - 0.06);
+        let done = false;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          try {
+            heroV.pause();
+          } catch (e) {}
+          resolve();
+        };
+        const runSeek = () => {
+          heroV.addEventListener('seeked', finish, { once: true });
+          try {
+            heroV.currentTime = t;
+          } catch (e) {
+            finish();
+            return;
+          }
+          setTimeout(finish, 400);
+        };
+        if (heroV.readyState >= 1) {
+          runSeek();
+        } else {
+          heroV.addEventListener('loadedmetadata', runSeek, { once: true });
+          heroV.addEventListener('error', () => resolve(), { once: true });
+          setTimeout(() => resolve(), 2000);
+        }
+      });
+    }
 
     function openEnvelope() {
       if (envelopeOpened) return;
@@ -851,6 +1118,8 @@
       const videoOverlay = document.getElementById('video-overlay');
       const v1 = document.getElementById('envelope-video');
       const v2 = document.getElementById('intro-video');
+      const heroBgVideo = document.getElementById('hero-bg-video');
+      const videoOutro = document.getElementById('video-outro');
 
       let safetyTimer = null;
       let sequenceDone = false;
@@ -858,22 +1127,56 @@
         if (sequenceDone) return;
         sequenceDone = true;
         if (safetyTimer) clearTimeout(safetyTimer);
-        videoOverlay.style.transition = 'opacity 1s ease';
-        videoOverlay.style.opacity = '0';
-        setTimeout(() => {
-          videoOverlay.classList.remove('active');
-          videoOverlay.style.display = 'none';
-          videoOverlay.style.opacity = '1';
+
+        try {
+          v2.pause();
+        } catch (e) {}
+        if (Number.isFinite(v2.duration) && v2.duration > 0) {
           try {
-            v1.pause();
+            v2.currentTime = Math.max(0, v2.duration - 0.08);
+          } catch (e) {}
+          try {
             v2.pause();
           } catch (e) {}
-          v1.style.opacity = '1';
-          v2.style.opacity = '0';
-          v1.style.zIndex = '';
-          v2.style.zIndex = '';
+        }
+
+        const heroPrep = prepareHeroBackgroundVideo(v2, heroBgVideo);
+        /* Після повної вуалі + коротка пауза — запрошення проявляється разом зі зникненням оверлею */
+        const veilMs = 1150;
+        const pauseAfterVeilMs = 380;
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            if (videoOutro) videoOutro.classList.add('is-revealing');
+          });
+        });
+
+        Promise.all([heroPrep, new Promise((r) => setTimeout(r, veilMs + pauseAfterVeilMs))]).then(() => {
+          if (heroBgVideo) {
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                heroBgVideo.classList.add('is-ready');
+              });
+            });
+          }
           showInvitation();
-        }, 1000);
+          videoOverlay.style.transition = 'opacity 1.1s ease';
+          videoOverlay.style.opacity = '0';
+          setTimeout(() => {
+            if (videoOutro) videoOutro.classList.remove('is-revealing');
+            videoOverlay.classList.remove('active');
+            videoOverlay.style.display = 'none';
+            videoOverlay.style.opacity = '1';
+            try {
+              v1.pause();
+              v2.pause();
+            } catch (e) {}
+            v1.style.opacity = '1';
+            v2.style.opacity = '0';
+            v1.style.zIndex = '';
+            v2.style.zIndex = '';
+          }, 1100);
+        });
       }
 
       videoOverlay.style.opacity = '1';
@@ -886,6 +1189,9 @@
       /* Почати завантаження другого відео одразу після жесту (оверлей вже display:block), щоб до старту другого ролика воно встигло підготуватися */
       try {
         v2.load();
+      } catch (e) {}
+      try {
+        if (heroBgVideo) heroBgVideo.load();
       } catch (e) {}
 
       v1.currentTime = 0;
