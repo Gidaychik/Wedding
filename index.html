@@ -177,29 +177,6 @@
       transition: opacity 0.65s ease-in-out;
     }
 
-    /* Кінець інтро: лише вуаль поверх зупиненого відео → далі головна сторінка */
-    .video-outro {
-      position: absolute;
-      inset: 0;
-      z-index: 20;
-      pointer-events: none;
-    }
-    .video-outro__veil {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        185deg,
-        rgba(42, 32, 28, 0.62) 0%,
-        rgba(32, 26, 22, 0.78) 50%,
-        rgba(48, 36, 30, 0.7) 100%
-      );
-      opacity: 0;
-      transition: opacity 1.15s ease;
-    }
-    .video-outro.is-revealing .video-outro__veil {
-      opacity: 1;
-    }
-
     /* ── Invitation content (бежевий фон узгоджений зі сторінкою) ── */
     #invitation {
       position: relative;
@@ -220,7 +197,7 @@
       min-height: 100vh;
       min-height: 100svh;
       opacity: 0;
-      transition: opacity 1.1s ease;
+      transition: opacity 0.9s ease;
     }
     #invitation.visible .invitation-inner {
       opacity: 1;
@@ -340,7 +317,7 @@
       z-index: 0;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 1.1s ease;
+      transition: opacity 0.9s ease;
     }
     .hero-bg-video.is-ready {
       opacity: 1;
@@ -851,9 +828,6 @@
       <!-- Файл Video.mp4 зазвичай поруч із index.html; при деплої в assets додайте другий <source> -->
       <source src="Video.mp4" type="video/mp4" />
     </video>
-    <div id="video-outro" class="video-outro" aria-hidden="true">
-      <div class="video-outro__veil"></div>
-    </div>
   </div>
 
   <!-- Main invitation content -->
@@ -1119,7 +1093,6 @@
       const v1 = document.getElementById('envelope-video');
       const v2 = document.getElementById('intro-video');
       const heroBgVideo = document.getElementById('hero-bg-video');
-      const videoOutro = document.getElementById('video-outro');
 
       let safetyTimer = null;
       let sequenceDone = false;
@@ -1141,17 +1114,9 @@
         }
 
         const heroPrep = prepareHeroBackgroundVideo(v2, heroBgVideo);
-        /* Після повної вуалі + коротка пауза — запрошення проявляється разом зі зникненням оверлею */
-        const veilMs = 1150;
-        const pauseAfterVeilMs = 380;
+        const overlayFadeMs = 820;
 
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            if (videoOutro) videoOutro.classList.add('is-revealing');
-          });
-        });
-
-        Promise.all([heroPrep, new Promise((r) => setTimeout(r, veilMs + pauseAfterVeilMs))]).then(() => {
+        Promise.all([heroPrep, new Promise((r) => setTimeout(r, 40))]).then(() => {
           if (heroBgVideo) {
             requestAnimationFrame(() => {
               requestAnimationFrame(() => {
@@ -1160,10 +1125,9 @@
             });
           }
           showInvitation();
-          videoOverlay.style.transition = 'opacity 1.1s ease';
+          videoOverlay.style.transition = 'opacity 0.82s ease';
           videoOverlay.style.opacity = '0';
           setTimeout(() => {
-            if (videoOutro) videoOutro.classList.remove('is-revealing');
             videoOverlay.classList.remove('active');
             videoOverlay.style.display = 'none';
             videoOverlay.style.opacity = '1';
@@ -1175,7 +1139,7 @@
             v2.style.opacity = '0';
             v1.style.zIndex = '';
             v2.style.zIndex = '';
-          }, 1100);
+          }, overlayFadeMs);
         });
       }
 
