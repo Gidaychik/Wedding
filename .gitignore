@@ -1,0 +1,15 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Дублікати в корені (канонічні копії в assets/)
+/envelope.png
+/envelop.mp4
+/icon.png
+/colors.png
+
+# Локальні нотатки (необовʼязково)
+*.log
